@@ -7,4 +7,13 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'test-shapeshift-hdwallet';
+
+  btnConnectTrezor(){
+    console.log("Connecting to Trezor");
+    
+  }
+
+  btnConnectLedger(){
+    console.log("Connecting to Ledger");
+  }
 }
