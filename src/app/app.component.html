@@ -14,6 +14,25 @@
       <div class="row">
         <p>{{deviceId}}</p>
       </div>
+      <div class="row">
+        <p>{{event}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Command</h5>
+      <div class="row">
+        <div class="col-sm-2">
+          <button type="button" class="btn btn-primary" (click)="btnGetPublicKey()">Get Public Key</button>
+        </div>
+        <div class="col-sm-2">
+          <button type="button" class="btn btn-primary" (click)="btnGetAddress()">Get Address</button>
+        </div>
+      </div>
+      <div class="row">
+        <p>{{devReturn}}</p>
+      </div>
     </div>
   </div>
 </div>
