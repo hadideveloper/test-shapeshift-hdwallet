@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import * as core from "@shapeshiftoss/hdwallet-core";
 import * as trezorConnect from "@shapeshiftoss/hdwallet-trezor-connect";
+import * as ledgerWebUSB from "@shapeshiftoss/hdwallet-ledger-webusb";
 
 const keyring = new core.Keyring();
 
@@ -17,7 +18,11 @@ export class AppComponent implements OnInit {
   devReturn='';
 
   //! wallet
-  private _wallet:any;
+  private _wallet: any;
+
+  //! wallet adapters
+  private _walletName = 'Trezor' || 'Ledger';
+  private _adapter: any;
 
   ngOnInit(): void {
     keyring.on(["*", "*", core.Events.CONNECT], async (deviceId) => {
@@ -31,14 +36,6 @@ export class AppComponent implements OnInit {
     });
   }
 
-  //! wallet adapters
-  private readonly _trezorAdapter = trezorConnect.TrezorAdapter.useKeyring(keyring, {
-    debug: false,
-    manifest: {
-      email: "oss@shapeshiftoss.io",
-      appUrl: "https://shapeshift.com",
-    },
-  });
 
   private async _onDeviceConnected(deviceId: string){
     this.deviceId = deviceId;
@@ -47,7 +44,18 @@ export class AppComponent implements OnInit {
 
   async btnConnectTrezor(){
     console.log("Connecting to Trezor");
-    this._wallet = await this._trezorAdapter.pairDevice();
+
+    this._walletName = 'Trezor';
+
+    this._adapter = trezorConnect.TrezorAdapter.useKeyring(keyring, {
+      debug: true,
+      manifest: {
+        email: "info@paymento.io",
+        appUrl: "https://paymento.io",
+      },
+    });
+
+    this._wallet = await this._adapter.pairDevice();
 
     this.deviceId = await this._wallet.getDeviceID();
 
@@ -55,6 +63,8 @@ export class AppComponent implements OnInit {
 
   async btnConnectLedger(){
     console.log("Connecting to Ledger");
+
+    this._walletName = 'Ledger';
   }
 
   async btnGetPublicKey() {
