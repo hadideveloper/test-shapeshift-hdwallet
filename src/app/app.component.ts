@@ -1,6 +1,24 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import * as core from "@shapeshiftoss/hdwallet-core";
 import * as trezorConnect from "@shapeshiftoss/hdwallet-trezor-connect";
+import * as walletConnectv2 from "@shapeshiftoss/hdwallet-walletconnectv2";
+import { EthereumProviderOptions } from "@walletconnect/ethereum-provider/dist/types/EthereumProvider";
+
+const walletConnectV2Options: EthereumProviderOptions = {
+  projectId: "5abef0455c768644c2bc866f1520374f",
+  chains: [1],
+  optionalChains: [100],
+  optionalMethods: [
+    "eth_signTypedData",
+    "eth_signTypedData_v4",
+    "eth_sign",
+    "ethVerifyMessage",
+    "eth_accounts",
+    "eth_sendTransaction",
+    "eth_signTransaction",
+  ],
+  showQrModal: true,
+};
 
 const keyring = new core.Keyring();
 
@@ -17,7 +35,11 @@ export class AppComponent implements OnInit {
   devReturn='';
 
   //! wallet
-  private _wallet:any;
+  private _walletModel: 'none' | 'trezor' | 'walletconnect' = 'none';
+  private _wallet: any;
+
+  private _adapter: any;
+
 
   ngOnInit(): void {
     keyring.on(["*", "*", core.Events.CONNECT], async (deviceId) => {
@@ -31,15 +53,6 @@ export class AppComponent implements OnInit {
     });
   }
 
-  //! wallet adapters
-  private readonly _trezorAdapter = trezorConnect.TrezorAdapter.useKeyring(keyring, {
-    debug: false,
-    manifest: {
-      email: "oss@shapeshiftoss.io",
-      appUrl: "https://shapeshift.com",
-    },
-  });
-
   private async _onDeviceConnected(deviceId: string){
     this.deviceId = deviceId;
     this._wallet = keyring.get(deviceId);
@@ -47,10 +60,41 @@ export class AppComponent implements OnInit {
 
   async btnConnectTrezor(){
     console.log("Connecting to Trezor");
-    this._wallet = await this._trezorAdapter.pairDevice();
 
+    //! Set wallet model
+    this._walletModel = 'trezor';
+
+    //! Set adapter
+    this._adapter = trezorConnect.TrezorAdapter.useKeyring(keyring, {
+      debug: false,
+      manifest: {
+        email: "oss@shapeshiftoss.io",
+        appUrl: "https://shapeshift.com",
+      },
+    });
+
+    //! Set wallet
+    this._wallet = await this._adapter.pairDevice();
+
+    //! get device id
     this.deviceId = await this._wallet.getDeviceID();
 
+  }
+
+  async btnWalletConnect() {
+    console.log("Connecting to WalletConnect");
+
+    //! Set wallet model
+    this._walletModel = 'walletconnect';
+
+    //! Set adapter
+    this._adapter = walletConnectv2.WalletConnectV2Adapter.useKeyring(keyring, walletConnectV2Options);
+
+    //! Set wallet
+    this._wallet = await this._adapter.pairDevice();
+
+    //! get device id
+    this.deviceId = await this._wallet.getDeviceID();
   }
 
   async btnConnectLedger(){
@@ -84,7 +128,16 @@ export class AppComponent implements OnInit {
       return;
     }
 
-    if (core.supportsBTC(this._wallet)) {
+    if(this._walletModel=='walletconnect') {
+      console.log('walletconnect get address');
+      const result = await this._wallet.ethGetAddress({
+        addressNList: [0x80000000 + 44, 0x80000000 + 60, 0x80000000 + 0, 0, 0],
+        showDisplay: false,
+      });
+
+      this.devReturn = result || 'NULL';
+    }
+    else if (core.supportsBTC(this._wallet)) {
       const result = await this._wallet.btcGetAddress({
         addressNList: [0x80000000 + 44, 0x80000000 + 0, 0x80000000 + 0, 0, 0],
         coin: "Bitcoin",
