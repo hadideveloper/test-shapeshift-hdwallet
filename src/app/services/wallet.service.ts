@@ -236,13 +236,19 @@ class WalletService {
         let addressInfo = await this._getFromServer<EthereumAddressModel>(`https://eth.prokey.app/blockbook/eth/api/v2/address/${address}`);
 
         //! Get MaxFeePerGas, MaxPriorityFeePerGas, GasLimit from Web3
+        //! For now, we use Goerli testnet
         let web3 = new Web3("https://ethereum-goerli.publicnode.com");
 
+        let gasPrice = await web3.eth.getGasPrice();
+
+        //! Get base fee from latest block
         let baseFee = (await web3.eth.getBlock("latest")).baseFeePerGas;
+
+        //! Set MaxPriorityFeePerGas to 1.5 Gwei, now it's fixed
         let maxPriorityFeePerGas: bigint = BigInt("1500000000");
         let maxFeePerGas: bigint | undefined;
 
-        let valueInWeiInHexFormat = web3.utils.toWei(amount, 'ether');
+        let valueInWei = web3.utils.toWei(amount, 'ether');
         
         if (baseFee !== undefined) {
             maxFeePerGas = (BigInt(baseFee) * BigInt(2)) + maxPriorityFeePerGas;
@@ -260,33 +266,52 @@ class WalletService {
         }
 
         let valueToSend = '';
+        //! For metamask, we need to convert value to hex
         if(this._walletModel == WalletModelEnum.MetaMask) {
-            valueToSend = web3.utils.numberToHex(valueInWeiInHexFormat);
+            valueToSend = web3.utils.numberToHex(valueInWei);
         }
         else {
-            valueToSend = valueInWeiInHexFormat;
+            valueToSend = valueInWei;
         }
 
-        let tx: core.ETHSignTx = {
-            addressNList: pathArray,
-            to: toAddress,
-            value: valueToSend,
-            data: '',
-            chainId: 5,
-            nonce: '0x' + addressInfo.nonce,
-            gasLimit: '0x35B60',
-            maxPriorityFeePerGas: '0x' + maxPriorityFeePerGas.toString(16),
-            maxFeePerGas: '0x' + (maxFeePerGas?.toString(16) ?? ''),
-        };
+        let tx: core.ETHSignTx;
+
+        //! EIP-1559
+        if(baseFee !== undefined) {
+            tx = {
+                addressNList: pathArray,
+                to: toAddress,
+                value: valueToSend,
+                data: '',
+                chainId: 5,
+                nonce: '0x' + addressInfo.nonce,
+                gasLimit: '0x35B60',
+                maxPriorityFeePerGas: '0x' + maxPriorityFeePerGas.toString(16),
+                maxFeePerGas: '0x' + (maxFeePerGas?.toString(16) ?? ''),
+            };
+        } 
+        else //! Legacy 
+        {
+            tx = {
+                addressNList: pathArray,
+                to: toAddress,
+                value: valueToSend,
+                data: '',
+                chainId: 5,
+                nonce: '0x' + addressInfo.nonce,
+                gasLimit: '0x35B60',
+                gasPrice: '0x' + gasPrice.toString(16),
+            };
+        }
 
         console.log('Generated Tx', tx);
 
-        return {
-            IsSuccess: true,
-            Message: '',
-            Data: tx
+            return {
+                IsSuccess: true,
+                Message: '',
+                Data: tx
+            }
         }
-    }
 
     public async SignEthTransaction(tx: core.ETHSignTx): Promise<WalletServiceResponse> {
         if(this._wallet == null) {

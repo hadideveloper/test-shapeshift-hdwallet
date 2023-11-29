@@ -99,7 +99,7 @@ export class AppComponent implements OnInit {
     console.log("Signing ETH Tx");
 
     let res = await this._walletService.GenerateEthTransaction(
-      '0xb9D3e45AAEE1Ab9a5B87ff8bC999867A99897A78',
+      '0x2e4373bD1C87D7d065131fe5a1213Cf0B6c2A207',
       '0.001'
     )
 
