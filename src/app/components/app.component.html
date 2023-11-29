@@ -4,14 +4,20 @@
     <div class="card-body">
       <h5 class="card-title">Select wallet to connect</h5>
       <div class="row">
-        <div class="col-sm-1">
+        <div class="col">
           <button type="button" class="btn btn-primary" (click)="btnConnectTrezor()">Trezor</button>
         </div>
-        <div class="col-sm-1">
-          <button type="button" class="btn btn-primary" (click)="btnWalletConnect()">Wallet Connect</button>
+        <div class="col">
+          <button type="button" class="btn btn-primary" (click)="btnWalletConnect()">WalletConnect</button>
         </div>
-        <div class="col-sm-1">
+        <div class="col">
+          <button type="button" class="btn btn-primary" (click)="btnConnectMetamask()">Metamask</button>
+        </div>
+        <div class="col">
           <button type="button" class="btn btn-primary" (click)="btnConnectLedger()">Ledger</button>
+        </div>
+        <div class="col-6">
+
         </div>
       </div>
       <div class="row">
@@ -30,7 +36,13 @@
           <button type="button" class="btn btn-primary" (click)="btnGetPublicKey()">Get Public Key</button>
         </div>
         <div class="col-sm-2">
-          <button type="button" class="btn btn-primary" (click)="btnGetAddress()">Get Address</button>
+          <button type="button" class="btn btn-primary" (click)="btnBtcGetAddress()">BTC Get Address</button>
+        </div>
+        <div class="col-sm-2">
+          <button type="button" class="btn btn-primary" (click)="btnEthGetAddress()">ETH Get Address</button>
+        </div>
+        <div class="col-sm-2">
+          <button type="button" class="btn btn-primary" (click)="btnSignEthTx()">Sign TX Transaction</button>
         </div>
       </div>
       <div class="row">

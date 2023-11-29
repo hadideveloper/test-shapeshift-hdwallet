@@ -20,6 +20,12 @@
     "@angular/router": "^16.2.0",
     "@ng-bootstrap/ng-bootstrap": "^15.1.1",
     "@popperjs/core": "^2.11.6",
+    "@shapeshiftoss/hdwallet-core": "1.50.4",
+    "@shapeshiftoss/hdwallet-metamask": "1.52.12",
+    "@shapeshiftoss/hdwallet-native": "1.50.4",
+    "@shapeshiftoss/hdwallet-trezor": "1.52.12",
+    "@shapeshiftoss/hdwallet-trezor-connect": "1.52.12",
+    "@shapeshiftoss/hdwallet-walletconnectv2": "1.52.12",
     "assert": "^2.1.0",
     "bootstrap": "^5.2.3",
     "buffer": "^6.0.3",
@@ -27,14 +33,10 @@
     "rxjs": "~7.8.0",
     "stream-browserify": "^3.0.0",
     "tslib": "^2.3.0",
+    "typescript-http-client": "^0.10.4",
     "util": "^0.12.5",
-    "zone.js": "~0.13.0",
-
-    "@shapeshiftoss/hdwallet-core": "1.50.4",
-    "@shapeshiftoss/hdwallet-native": "1.50.4",
-    "@shapeshiftoss/hdwallet-trezor": "1.52.12",
-    "@shapeshiftoss/hdwallet-trezor-connect": "1.52.12",
-    "@shapeshiftoss/hdwallet-walletconnectv2": "1.52.12"
+    "web3": "^4.2.2",
+    "zone.js": "~0.13.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^16.2.1",
