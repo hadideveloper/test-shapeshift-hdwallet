@@ -27,6 +27,7 @@
       "assert": ["./node_modules/assert"],
       "stream": ["./node_modules/stream-browserify"],
     },
+    "allowSyntheticDefaultImports": true,
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
